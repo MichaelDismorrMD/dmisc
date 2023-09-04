@@ -4,12 +4,12 @@
 #' It returns a dataframe with estimated incidence rate per 100 person years.
 #' Uses marginaleffects::avg_predictions to obtain marginal population standardized estimates
 #'
-#' @param data A dataframe containting the variables used
-#' @param exposure_var Column in data that contains the exposure variable
-#' @param age_var Column in data that contains the age variable in years
-#' @param sex_var Column in data that contains the sex variable
-#' @param event_var Column in data that contains the event indicator
-#' @param time_var Column in data that contains the follow-up time indicator in days
+#' @param data A dataframe containting the variables used. Dataframe.
+#' @param exposure_var Column in data that contains the exposure variable. Numeric or categorical vector.
+#' @param age_var Column in data that contains the age variable in years. Numerical vector.
+#' @param sex_var Column in data that contains the sex variable. Binary numerical or categorical vector.
+#' @param event_var Column in data that contains the event indicator. Binary numerical vector, 0 = no event, 1 = event.
+#' @param time_var Column in data that contains the follow-up time indicator in days. Numerical vector.
 #'
 #' @return A dataframe with the following columns
 #' * `Treatment`:  Treatment groups

@@ -7,17 +7,17 @@
 age_sex_adjust(data, exposure_var, age_var, sex_var, event_var, time_var)
 }
 \arguments{
-\item{data}{A dataframe containting the variables used}
+\item{data}{A dataframe containting the variables used. Dataframe.}
 
-\item{exposure_var}{Column in data that contains the exposure variable}
+\item{exposure_var}{Column in data that contains the exposure variable. Numeric or categorical vector.}
 
-\item{age_var}{Column in data that contains the age variable in years}
+\item{age_var}{Column in data that contains the age variable in years. Numerical vector.}
 
-\item{sex_var}{Column in data that contains the sex variable}
+\item{sex_var}{Column in data that contains the sex variable. Binary numerical or categorical vector.}
 
-\item{event_var}{Column in data that contains the event indicator}
+\item{event_var}{Column in data that contains the event indicator. Binary numerical vector, 0 = no event, 1 = event.}
 
-\item{time_var}{Column in data that contains the follow-up time indicator in days}
+\item{time_var}{Column in data that contains the follow-up time indicator in days. Numerical vector.}
 }
 \value{
 A dataframe with the following columns
