@@ -1,3 +1,27 @@
+#' Calculate age- and sex-adjusted incidence rates
+#'
+#' This function uses a poisson model to adjust for age and sex.
+#' It returns a dataframe with estimated incidence rate per 100 person years.
+#' Uses marginaleffects::avg_predictions to obtain marginal population standardized estimates
+#'
+#' @param data A dataframe containting the variables used
+#' @param exposure_var Column in data that contains the exposure variable
+#' @param age_var Column in data that contains the age variable in years
+#' @param sex_var Column in data that contains the sex variable
+#' @param event_var Column in data that contains the event indicator
+#' @param time_var Column in data that contains the follow-up time indicator in days
+#'
+#' @return A dataframe with the following columns
+#' * `Treatment`:  Treatment groups
+#' * `IR`:  Age- and sex-adjusted incidence rate per 100 person year
+#' * `Lower_CI`:  Lower 95% confidence interval
+#' * `Upper_CI`:  Upper 95% confidence interval
+#' @export
+#'
+#' @examples colon_death <- colon[colon$etype == 2, ] # Select rows with event indicator and follow-up time for death
+#' age_sex_adjust(colon_death, rx, age, sex, status, time)
+#' age_sex_adjust(colon[colon$etype == 2, ], rx, age, sex, status, time)
+#'
 age_sex_adjust <- function(data,
                             exposure_var,
                             age_var,
@@ -32,7 +56,12 @@ age_sex_adjust <- function(data,
 
   newdat[time_var] <- 36525 # To get IR since offset is specified as days/365.25/100
 
-  marginaleffects::avg_predictions(poisson_fit, variables = exposure_var, newdata = newdat, type = "response")
+  result <- marginaleffects::avg_predictions(poisson_fit, variables = exposure_var, newdata = newdat, type = "response")
+
+  data.frame(Treatment = result[[1]],
+  IR = result[["estimate"]],
+  Lower_CI = result[["conf.low"]],
+  Upper_CI = result[["conf.high"]])
 
 
 }
