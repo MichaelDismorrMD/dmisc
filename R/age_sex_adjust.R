@@ -18,7 +18,8 @@
 #' * `Upper_CI`:  Upper 95% confidence interval
 #' @export
 #'
-#' @examples colon_death <- colon[colon$etype == 2, ] # Select rows with event indicator and follow-up time for death
+#' @examples
+#' colon_death <- colon[colon$etype == 2, ] # Select rows with event indicator and follow-up time for death
 #' age_sex_adjust(colon_death, rx, age, sex, status, time)
 #' age_sex_adjust(colon[colon$etype == 2, ], rx, age, sex, status, time)
 #'
