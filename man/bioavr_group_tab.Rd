@@ -21,10 +21,8 @@ Usually used to create crude and age-, and sex-adjusted incidence rate tables.
 Useful for exporting to word using the \code{flextable::save_as_docx()} function.
 }
 \examples{
-bind_rows(list("Crude" = rates_table,
+dplyr::bind_rows(list("Crude" = rates_table,
 "Age adjusted" = rates_table_adjust), .id = "id") \%>\%
- as_grouped_data(groups = c("id")) \%>\%
- as_flextable(hide_grouplabel = T) \%>\%
  bioavr_group_tab(header = header, footer = footer)
 
 

@@ -16,12 +16,9 @@
 #' @export
 #'
 #' @examples
-#' library(mexhaz)
-#' library(survival)
-#' library(dplyr)
 #' # We will use the pbc dataset from the `survival` package
 #'
-#' pbc <- pbc %>% mutate(time_years = time / 365.241)
+#' pbc <- survival::pbc %>% dplyr::mutate(time_years = time / 365.241)
 #'
 #' kts <- quantile(pbc$time_years, probs=c(1/3,2/3)) # Knot positions for the baseline hazard
 #'
@@ -93,18 +90,19 @@ regstand_cr <- function(data, exposure, outcome_mod = NA, death_mod = NA, maxt =
 
 
 csprobPar <- function(data_df, modA, modB, time.max, frag){
-  foreach(y = 1:nrow(data_df),.combine = "rbind", .packages = c("mexhaz", "Matrix")) %dopar% {
+  y_index <- NULL # To supress warning from devtools::check()
+  foreach::foreach(y_index = 1:nrow(data_df),.combine = "rbind", .packages = c("mexhaz", "Matrix")) %dopar% {
 
     cumIncidence_CS <- function(model1, model2, time.max, subdiv, data.val = data.frame(.NotUsed = NA), alpha = 0.05){
       time.pts <- seq(0, time.max, le = (subdiv + 1))
       CstMult <- time.max / (2 * subdiv)
-      CstCI <- qnorm(1 - alpha / 2)
+      CstCI <- stats::qnorm(1 - alpha / 2)
 
       # Or if you want to take into account the size of the population
       # CstCI <- qt(1-alpha/2,df=model£n.obs)
 
-      Pred1 <- predict(model1, time.pts, data.val, include.gradient=T)
-      Pred2 <- predict(model2, time.pts, data.val, include.gradient=T)
+      Pred1 <- stats::predict(model1, time.pts, data.val, include.gradient=T)
+      Pred2 <- stats::predict(model2, time.pts, data.val, include.gradient=T)
 
       ISurv1 <- Pred1$results$hazard * Pred1$results$surv * Pred2$results$surv
       CPr.1 <- cumsum(ISurv1 + c(0,ISurv1[-subdiv])) * (time.max / (2 * subdiv))
@@ -128,7 +126,7 @@ csprobPar <- function(data_df, modA, modB, time.max, frag){
 
       Vcov1 <- model1$vcov[c(which.ntd1,which.td1),c(which.ntd1,which.td1)]
       Vcov2 <- model2$vcov[c(which.ntd2,which.td2),c(which.ntd2,which.td2)]
-      CovMat <- as.matrix(bdiag(Vcov1,Vcov2))
+      CovMat <- as.matrix(Matrix::bdiag(Vcov1,Vcov2))
       AGrad11 <- (Pred1$grad.loghaz + Pred1$grad.logcum * (log(Pred1$results$surv)))[,c(which.ntd1,which.td1)]
 
       AGrad12 <- (Pred2$grad.logcum * (log(Pred2$results$surv)))[,c(which.ntd2,which.td2)]
@@ -188,7 +186,7 @@ csprobPar <- function(data_df, modA, modB, time.max, frag){
 
 
 
-    list(cumIncidence_CS(modA, modB, time.max, subdiv = frag, data.val = data_df[y,]))
+    list(cumIncidence_CS(modA, modB, time.max, subdiv = frag, data.val = data_df[y_index,]))
 
   }
 }
@@ -210,7 +208,7 @@ csprobdif <- function(predprob1, predprob2){
   CP2.dif <- apply(CP2.dif_df, 1, mean)
 
   ci_form <- function(x, var, m){
-    x + m * qnorm(0.975) * sqrt(var)
+    x + m * stats::qnorm(0.975) * sqrt(var)
   }
 
   Var1 <-data.frame(sapply(1:frag, function(x) Var_func(x,w,NBGrad1.ls,CovMat)))
@@ -287,7 +285,7 @@ predict_prob <- function(csprobObj, pop){
 }
 
 Transf <- function(x, vx, m){
-  log(-log(x)) + m * qnorm(0.975) * sqrt(vx)
+  log(-log(x)) + m * stats::qnorm(0.975) * sqrt(vx)
 }
 
 InvTransf <- function(x){exp(-exp(x))}
@@ -316,7 +314,7 @@ Var_func <- function (x, w, NBGrad, CovMat){
 csprob <-function(data_df, modA, modB, time.max, frag){
       results_list<- list()
       for (y in 1:nrow(data_df)){
-        results_list[[y]] <- cumIncidence.CS(modA, modB, time.max,
+        results_list[[y]] <- cumIncidence_CS(modA, modB, time.max,
                                              subdiv = frag,
                                              data.val = data_df[y,])
       }
@@ -327,13 +325,13 @@ csprob <-function(data_df, modA, modB, time.max, frag){
 cumIncidence_CS <- function(model1, model2, time.max, subdiv, data.val = data.frame(.NotUsed = NA), alpha = 0.05){
   time.pts <- seq(0, time.max, le = (subdiv + 1))
   CstMult <- time.max / (2 * subdiv)
-  CstCI <- qnorm(1 - alpha / 2)
+  CstCI <- stats::qnorm(1 - alpha / 2)
 
   # Or if you want to take into account the size of the population
   # CstCI <- qt(1-alpha/2,df=model£n.obs)
 
-  Pred1 <- predict(model1, time.pts, data.val, include.gradient=T)
-  Pred2 <- predict(model2, time.pts, data.val, include.gradient=T)
+  Pred1 <- stats::predict(model1, time.pts, data.val, include.gradient=T)
+  Pred2 <- stats::predict(model2, time.pts, data.val, include.gradient=T)
 
   ISurv1 <- Pred1$results$hazard * Pred1$results$surv * Pred2$results$surv
   CPr.1 <- cumsum(ISurv1 + c(0,ISurv1[-subdiv])) * (time.max / (2 * subdiv))
@@ -357,7 +355,7 @@ cumIncidence_CS <- function(model1, model2, time.max, subdiv, data.val = data.fr
 
   Vcov1 <- model1$vcov[c(which.ntd1,which.td1),c(which.ntd1,which.td1)]
   Vcov2 <- model2$vcov[c(which.ntd2,which.td2),c(which.ntd2,which.td2)]
-  CovMat <- as.matrix(bdiag(Vcov1,Vcov2))
+  CovMat <- as.matrix(Matrix::bdiag(Vcov1,Vcov2))
   AGrad11 <- (Pred1$grad.loghaz + Pred1$grad.logcum * (log(Pred1$results$surv)))[,c(which.ntd1,which.td1)]
 
   AGrad12 <- (Pred2$grad.logcum * (log(Pred2$results$surv)))[,c(which.ntd2,which.td2)]

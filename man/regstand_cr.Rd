@@ -39,12 +39,9 @@ Obtain regression standardized cumulative incidence while
 accounting for the competing risk of death
 }
 \examples{
-library(mexhaz)
-library(survival)
-library(dplyr)
 # We will use the pbc dataset from the `survival` package
 
-pbc <- pbc \%>\% mutate(time_years = time / 365.241)
+pbc <- survival::pbc \%>\% dplyr::mutate(time_years = time / 365.241)
 
 kts <- quantile(pbc$time_years, probs=c(1/3,2/3)) # Knot positions for the baseline hazard
 
