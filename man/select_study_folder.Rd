@@ -4,10 +4,13 @@
 \alias{select_study_folder}
 \title{Select study root directory to chose where to load and save files from}
 \usage{
-select_study_folder()
+select_study_folder(path = "~/Library/CloudStorage")
+}
+\arguments{
+\item{path}{A string containing the path to list directories from. String.}
 }
 \value{
-A string with the path to the study folder
+A string with the path to the selected study root folder
 }
 \description{
 Select study root directory to chose where to load and save files from

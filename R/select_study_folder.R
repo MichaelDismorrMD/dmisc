@@ -1,6 +1,8 @@
 #' Select study root directory to chose where to load and save files from
 #'
-#' @return A string with the path to the study folder
+#' @param path A string containing the path to list directories from. String.
+#'
+#' @return A string with the path to the selected study root folder
 #' @export
 #'
 #' @examples
@@ -8,9 +10,7 @@
 #' # Chose one number corresponding the the folder you want to use and press enter
 #' # That is now stored in the global variable my_root_path
 #'
-select_study_folder <- function() {
-  # Define the path
-  path <- "~/Library/CloudStorage"
+select_study_folder <- function(path = "~/Library/CloudStorage") {
 
   # List the folders in the path
   folders <- list.dirs(path, full.names = FALSE, recursive = FALSE)
