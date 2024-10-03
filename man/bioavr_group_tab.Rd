@@ -21,9 +21,12 @@ Usually used to create crude and age-, and sex-adjusted incidence rate tables.
 Useful for exporting to word using the \code{flextable::save_as_docx()} function.
 }
 \examples{
-dplyr::bind_rows(list("Crude" = rates_table,
-"Age adjusted" = rates_table_adjust), .id = "id") \%>\%
- bioavr_group_tab(header = header, footer = footer)
+colon_death <- colon[colon$etype == 2, ]
+dplyr::bind_rows("Crude" = incidrate_crude(colon_death, rx, status, time),
+"Age- and sex-adjusted" = age_sex_adjust(colon_death, rx, age, sex, status, time), .id = "id") \%>\%
+bioavr_group_tab(header = "Table 2.
+Crude and age- and sex-adjusted incidence rates per 100 person-years",
+footer = "Estimated using a Poisson model")
 
 
 }

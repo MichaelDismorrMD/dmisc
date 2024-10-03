@@ -32,6 +32,6 @@ Uses marginaleffects::avg_predictions to obtain marginal population standardized
 colon_death <- colon[colon$etype == 2, ]
 # The row above selects rows with event indicator and follow-up time for death
 
-age_adjust(colon_death, sex, status, time)
+incidrate_crude(colon_death, rx, status, time)
 
 }

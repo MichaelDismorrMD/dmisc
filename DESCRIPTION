@@ -19,11 +19,12 @@ Imports:
     Matrix,
     officer,
     purrr,
-    stats, 
-    survival, 
+    stats,
     mexhaz
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    survival
 LazyData: true
 Suggests: 
+    doParallel,
     dplyr

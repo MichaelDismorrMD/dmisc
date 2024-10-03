@@ -22,7 +22,6 @@
 #' colon_death <- colon[colon$etype == 2, ]
 #' # The row above selects rows with event indicator and follow-up time for death
 #' age_sex_adjust(colon_death, rx, age, sex, status, time)
-#' age_sex_adjust(colon[colon$etype == 2, ], rx, age, sex, status, time)
 #'
 age_sex_adjust <- function(data,
                             exposure_var,

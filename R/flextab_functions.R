@@ -1,13 +1,37 @@
 
 
-bioavr_flextab_defaults <- function()
-{flextable::set_flextable_defaults(font.family = "Calibri",
+#' Set default values for flextable objects
+#'
+#' This function sets the font family to Calibri, size to 10pts, and border color to black.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' biavr_flextab_defaults()
+#'
+bioavr_flextab_defaults <- function(){
+  flextable::set_flextable_defaults(font.family = "Calibri",
                         font.size = 10,
                         border.color = "black")
 }
 
 
-bioavr_tab <- function(df, header, footer){
+#' Make a styled flextable.
+#' Suitable for saving to a word table.
+#' @param df A dataframe containing the data for the table. Dataframe
+#' @param header Header text. String
+#' @param footer Footer text. String
+#' @param default function from flextable::set_flextable_defaults()
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#'
+bioavr_tab <- function(df, header, footer, default = bioavr_flextab_defaults()){
+  default
   flextable::flextable(df) %>%
     flextable::add_header_lines(header) %>%
     flextable::add_footer_lines(footer) %>%
@@ -52,17 +76,22 @@ bioavr_tab <- function(df, header, footer){
 #' @param flextab data. Dataframe.
 #' @param header header text. String.
 #' @param footer footer text. String.
+#' @param default Set flextable defaults, using flextable::set_flextable_defaults(). Function
 #'
 #' @return A flextable object.
 #' @export
 #'
 #' @examples
-#' dplyr::bind_rows(list("Crude" = rates_table,
-#' "Age adjusted" = rates_table_adjust), .id = "id") %>%
-#'  bioavr_group_tab(header = header, footer = footer)
+#' colon_death <- colon[colon$etype == 2, ]
+#' dplyr::bind_rows("Crude" = incidrate_crude(colon_death, rx, status, time),
+#' "Age- and sex-adjusted" = age_sex_adjust(colon_death, rx, age, sex, status, time), .id = "id") %>%
+#' bioavr_group_tab(header = "Table 2.
+#' Crude and age- and sex-adjusted incidence rates per 100 person-years",
+#' footer = "Estimated using a Poisson model")
 #'
 #'
-bioavr_group_tab <- function(flextab, header, footer){
+bioavr_group_tab <- function(flextab, header, footer, default = bioavr_flextab_defaults()){
+  default
   flextab %>%
     flextable::as_grouped_data(groups = "id") %>%
     flextable::as_flextable(hide_grouplabel = TRUE) %>%

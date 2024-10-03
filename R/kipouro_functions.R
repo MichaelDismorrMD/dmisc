@@ -18,7 +18,8 @@
 #' @examples
 #' # We will use the pbc dataset from the `survival` package
 #'
-#' pbc <- survival::pbc %>% dplyr::mutate(time_years = time / 365.241)
+#' pbc <- survival::pbc %>% dplyr::mutate(time_years = time / 365.241) %>%
+#'  dplyr::select(time_years, status, sex, age, albumin)
 #'
 #' kts <- quantile(pbc$time_years, probs=c(1/3,2/3)) # Knot positions for the baseline hazard
 #'
@@ -26,24 +27,31 @@
 #'
 #' fragm <- maxt * 4 # Analyze at each quarter of follow-up
 #'
-#' outcome_mod <- mexhaz(Surv(time_years, status == 1) ~ sex + age + albumin + spiders,
-#' data = pbc,
-#' base = "exp.bs",
-#' degree = 3,
-#' knots = kts,
-#' verbose = 0,
-#' print.level = 0)
+#' outcome_mod <- mexhaz::mexhaz(Surv(time_years, status == 1) ~ sex + age + albumin,
+#'                              data = pbc,
+#'                              base = "exp.bs",
+#'                              degree = 3,
+#'                              knots = kts,
+#'                              verbose = 0,
+#'                              print.level = 0)
 #'
-#' death_mod <- mexhaz(Surv(time_years, status == 2) ~ sex + age + albumin + spiders,
-#' data = pbc,
-#' base = "exp.bs",
-#' degree = 3,
-#' knots = kts,
-#' verbose = 0,
-#' print.level = 0)
+#' death_mod <- mexhaz::mexhaz(Surv(time_years, status == 2) ~ sex + age + albumin,
+#'                            data = pbc,
+#'                            base = "exp.bs",
+#'                            degree = 3,
+#'                            knots = kts,
+#'                            verbose = 0,
+#'                            print.level = 0)
 #'
-#' regstand_result <- regstand_cr(pbc, sex, outcome_mod, death_mod, maxt, fragm)
+#' # Set number of cores to be used by the cores argument
 #'
+#' # n_cores <- parallel::detectCores() - 1
+#'
+#' doParallel::registerDoParallel(cores = 2) # Or use n_cores here
+#'
+#' results <- regstand_result <- regstand_cr(pbc, sex, outcome_mod, death_mod, maxt, fragm)
+#'
+#' doParallel::stopImplicitCluster()
 regstand_cr <- function(data, exposure, outcome_mod = NA, death_mod = NA, maxt = NA, fragm = NA) {
   exposure <- deparse(substitute(exposure))
   exposure_levels <- levels(data[[exposure]])
