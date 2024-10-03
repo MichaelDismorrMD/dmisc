@@ -4,7 +4,7 @@
 \alias{bioavr_group_tab}
 \title{Create a grouped flextable object}
 \usage{
-bioavr_group_tab(flextab, header, footer)
+bioavr_group_tab(flextab, header, footer, default = bioavr_flextab_defaults())
 }
 \arguments{
 \item{flextab}{data. Dataframe.}
@@ -12,6 +12,8 @@ bioavr_group_tab(flextab, header, footer)
 \item{header}{header text. String.}
 
 \item{footer}{footer text. String.}
+
+\item{default}{Set flextable defaults, using flextable::set_flextable_defaults(). Function}
 }
 \value{
 A flextable object.

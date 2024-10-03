@@ -66,9 +66,11 @@ death_mod <- mexhaz::mexhaz(Surv(time_years, status == 2) ~ sex + age + albumin,
                            verbose = 0,
                            print.level = 0)
 
-#n_cores <- parallel::detectCores() - 1 # Number of cores to use for parallel computing
+# Set number of cores to be used by the cores argument
 
-doParallel::registerDoParallel(cores = 2)
+# n_cores <- parallel::detectCores() - 1
+
+doParallel::registerDoParallel(cores = 2) # Or use n_cores here
 
 results <- regstand_result <- regstand_cr(pbc, sex, outcome_mod, death_mod, maxt, fragm)
 

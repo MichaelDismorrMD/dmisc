@@ -4,11 +4,11 @@
 #'
 #' This function sets the font family to Calibri, size to 10pts, and border color to black.
 #'
-#' @return
+#' @return A function.
 #' @export
 #'
 #' @examples
-#' biavr_flextab_defaults()
+#' bioavr_flextab_defaults()
 #'
 bioavr_flextab_defaults <- function(){
   flextable::set_flextable_defaults(font.family = "Calibri",
@@ -24,11 +24,17 @@ bioavr_flextab_defaults <- function(){
 #' @param footer Footer text. String
 #' @param default function from flextable::set_flextable_defaults()
 #'
-#' @return
+#' @return A flextable object.
 #' @export
 #'
 #' @examples
+#' colon_death <- colon[colon$etype == 2, ]
 #'
+#' colon_death %>% dplyr::group_by(rx) %>%
+#' dplyr::summarise("No." = dplyr::n(),
+#'          "Mean age" = round(mean(age)),
+#'          "Percent women" = paste0(round(sum(sex == "0")*100/`No.`), "%")) %>%
+#'  bioavr_tab("Header", "Footer")
 #'
 bioavr_tab <- function(df, header, footer, default = bioavr_flextab_defaults()){
   default
