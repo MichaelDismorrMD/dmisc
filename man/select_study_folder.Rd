@@ -16,7 +16,10 @@ A string with the path to the selected study root folder
 Select study root directory to chose where to load and save files from
 }
 \examples{
+\dontrun{
 my_root_path <- select_study_folder()
+}
+# Put interactive = FALSE in the example above to not hang automated tests during build
 # Chose one number corresponding the the folder you want to use and press enter
 # That is now stored in the global variable my_root_path
 

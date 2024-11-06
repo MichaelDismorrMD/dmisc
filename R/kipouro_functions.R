@@ -1,7 +1,11 @@
 
 
 #' Obtain regression standardized cumulative incidence while
-#' accounting for the competing risk of death
+#' accounting for the competing risk of death.
+#'
+#' Using methodology described in https://doi.org/10.1002/sim.8209.
+#' Building upon code by Dr. Dimitra-Kleio Kipourou.
+#'
 #'
 #' @param data The dataframe used to generate the models.
 #' @param exposure The column with the variable of interest. Should be a factor.
@@ -95,7 +99,40 @@ regstand_cr <- function(data, exposure, outcome_mod = NA, death_mod = NA, maxt =
   return(prob_list)
 }
 
+csprobdif <- function(predprob1, predprob2){
 
+  N <- ncol(predprob1$CPr1.df)
+  w<- matrix(rep(1 / N, N), nrow = 1)
+  frag <- predprob1$frag
+  CovMat <- predprob1$CovMat
+
+  NBGrad1.ls <- lapply(1:frag, function (x) predprob1$NBGrad1.ls[[x]] - predprob2$NBGrad1.ls[[x]])
+  NBGrad2.ls <- lapply(1:frag, function (x) predprob1$NBGrad2.ls[[x]] - predprob2$NBGrad2.ls[[x]])
+
+  CP1.dif_df <- predprob1$CPr1.df - predprob2$CPr1.df
+  CP2.dif_df <- predprob1$CPr2.df - predprob2$CPr2.df
+
+  CP1.dif <- apply(CP1.dif_df, 1, mean)
+  CP2.dif <- apply(CP2.dif_df, 1, mean)
+
+  ci_form <- function(x, var, m){
+    x + m * stats::qnorm(0.975) * sqrt(var)
+  }
+
+  Var1 <-data.frame(sapply(1:frag, function(x) Var_func(x,w,NBGrad1.ls,CovMat)))
+  Var2 <-data.frame(sapply(1:frag, function(x) Var_func(x,w,NBGrad2.ls,CovMat)))
+
+
+  CPr1.difLo <- ci_form(CP1.dif,Var1,-1)[,1]
+  CPr1.difUp <- ci_form(CP1.dif,Var1,+1)[,1]
+  CPr2.difLo <- ci_form(CP2.dif,Var2,-1)[,1]
+  CPr2.difUp <- ci_form(CP2.dif,Var2,+1)[,1]
+  return(list("time"= predprob1$time,
+              "ProbDif1"=CP1.dif, "ProbDif2"=CP2.dif,
+              "ProbDif1Lo"=CPr1.difLo,"ProbDif1Up"=CPr1.difUp,
+              "ProbDif2Lo"=CPr2.difLo,"ProbDif2Up"=CPr2.difUp))
+
+}
 
 csprobPar <- function(data_df, modA, modB, time.max, frag){
   y_index <- NULL # To supress warning from devtools::check()
@@ -197,41 +234,6 @@ csprobPar <- function(data_df, modA, modB, time.max, frag){
     list(cumIncidence_CS(modA, modB, time.max, subdiv = frag, data.val = data_df[y_index,]))
 
   }
-}
-
-csprobdif <- function(predprob1, predprob2){
-
-  N <- ncol(predprob1$CPr1.df)
-  w<- matrix(rep(1 / N, N), nrow = 1)
-  frag <- predprob1$frag
-  CovMat <- predprob1$CovMat
-
-  NBGrad1.ls <- lapply(1:frag, function (x) predprob1$NBGrad1.ls[[x]] - predprob2$NBGrad1.ls[[x]])
-  NBGrad2.ls <- lapply(1:frag, function (x) predprob1$NBGrad2.ls[[x]] - predprob2$NBGrad2.ls[[x]])
-
-  CP1.dif_df <- predprob1$CPr1.df - predprob2$CPr1.df
-  CP2.dif_df <- predprob1$CPr2.df - predprob2$CPr2.df
-
-  CP1.dif <- apply(CP1.dif_df, 1, mean)
-  CP2.dif <- apply(CP2.dif_df, 1, mean)
-
-  ci_form <- function(x, var, m){
-    x + m * stats::qnorm(0.975) * sqrt(var)
-  }
-
-  Var1 <-data.frame(sapply(1:frag, function(x) Var_func(x,w,NBGrad1.ls,CovMat)))
-  Var2 <-data.frame(sapply(1:frag, function(x) Var_func(x,w,NBGrad2.ls,CovMat)))
-
-
-  CPr1.difLo <- ci_form(CP1.dif,Var1,-1)[,1]
-  CPr1.difUp <- ci_form(CP1.dif,Var1,+1)[,1]
-  CPr2.difLo <- ci_form(CP2.dif,Var2,-1)[,1]
-  CPr2.difUp <- ci_form(CP2.dif,Var2,+1)[,1]
-  return(list("time"= predprob1$time,
-              "ProbDif1"=CP1.dif, "ProbDif2"=CP2.dif,
-              "ProbDif1Lo"=CPr1.difLo,"ProbDif1Up"=CPr1.difUp,
-              "ProbDif2Lo"=CPr2.difLo,"ProbDif2Up"=CPr2.difUp))
-
 }
 
 predict_prob <- function(csprobObj, pop){

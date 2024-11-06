@@ -3,7 +3,7 @@
 \name{regstand_cr}
 \alias{regstand_cr}
 \title{Obtain regression standardized cumulative incidence while
-accounting for the competing risk of death}
+accounting for the competing risk of death.}
 \usage{
 regstand_cr(
   data,
@@ -35,8 +35,8 @@ A list containing the following
 }
 }
 \description{
-Obtain regression standardized cumulative incidence while
-accounting for the competing risk of death
+Using methodology described in https://doi.org/10.1002/sim.8209.
+Building upon code by Dr. Dimitra-Kleio Kipourou.
 }
 \examples{
 # We will use the pbc dataset from the `survival` package
