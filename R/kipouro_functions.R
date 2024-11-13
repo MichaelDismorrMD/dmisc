@@ -99,6 +99,22 @@ regstand_cr <- function(data, exposure, outcome_mod = NA, death_mod = NA, maxt =
   return(prob_list)
 }
 
+#' Calculate regression standardized differences in cumulative incidence while accounting for the competing risk of death
+#'
+#' Using methodology described in https://doi.org/10.1002/sim.8209.
+#' Building upon code by Dr. Dimitra-Kleio Kipourou.
+#'
+#'
+#' @param predprob1 One object from prob_list from regstand_cr()
+#' @param predprob2 Another object from prob_list from regstand_cr() to subtract from
+#'
+#' @return Returns a list with the differences for the various causes. Usually ProbDif1 if what is wanted.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' differences <- csprobdif(prob_list$Male, prob_list$Female)
+#' }
 csprobdif <- function(predprob1, predprob2){
 
   N <- ncol(predprob1$CPr1.df)
